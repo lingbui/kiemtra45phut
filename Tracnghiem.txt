@@ -1,0 +1,26 @@
+Tracnghiem
+Câu 1:
+Kết quả in ra:
+
+Array
+(
+    [0] => 1
+    [1] => 2
+    [2] => 3
+    [3] => 4
+    [4] => 5
+    [5] => 6
+    [6] => 9
+)
+
+Câu 2:
+Đáp án: a) True
+
+Câu 3:
+Đáp án: a) array()
+
+Câu 4:
+Đáp án: a) readfile()
+
+Câu 5:
+Đáp án: b) Chuyển đổi một đối tượng thành một chuỗi
