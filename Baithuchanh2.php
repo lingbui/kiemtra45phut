@@ -1,54 +1,64 @@
 <?php
-// Tạo mảng học sinh
-$students = [
-    [
-        "id" => 1,
-        "name" => "Nguyen Van A",
-        "age" => 18,
-        "grade" => 8.5
-    ],
-    [
-        "id" => 2,
-        "name" => "Tran Thi B",
-        "age" => 17,
-        "grade" => 9.2
-    ],
-    [
-        "id" => 3,
-        "name" => "Le Van C",
-        "age" => 18,
-        "grade" => 7.8
-    ]
-];
 
-// Hiển thị tất cả học sinh
-echo "<h3>Danh sách học sinh</h3>";
+$host = "localhost";
+$user = "root";
+$pass = "";
+$dbname = "quan_ly_hoc_sinh";
 
-foreach ($students as $student) {
-    echo "ID: " . $student["id"] . "<br>";
-    echo "Tên: " . $student["name"] . "<br>";
-    echo "Tuổi: " . $student["age"] . "<br>";
-    echo "Điểm: " . $student["grade"] . "<br><br>";
-}
+try {
+    $pdo = new PDO("mysql:host=$host", $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Hàm tìm học sinh có điểm cao nhất
-function findTopStudent($students) {
-    $topStudent = $students[0];
+    // Tạo database
+    $pdo->exec("CREATE DATABASE IF NOT EXISTS $dbname");
+    $pdo->exec("USE $dbname");
 
-    foreach ($students as $student) {
-        if ($student["grade"] > $topStudent["grade"]) {
-            $topStudent = $student;
-        }
+    // Tạo bảng
+    $sql = "CREATE TABLE IF NOT EXISTS hoc_sinh(
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100),
+        age INT,
+        grade FLOAT
+    )";
+    $pdo->exec($sql);
+
+    // Thêm dữ liệu mẫu
+    $check = $pdo->query("SELECT COUNT(*) FROM hoc_sinh")->fetchColumn();
+
+    if ($check == 0) {
+        $pdo->exec("
+            INSERT INTO hoc_sinh(name, age, grade)
+            VALUES
+            ('Nguyen Van A',18,8.5),
+            ('Tran Thi B',17,9.2),
+            ('Le Van C',18,7.8)
+        ");
     }
 
-    return $topStudent;
+    // Hiển thị danh sách học sinh
+    echo "<h3>Danh sách học sinh</h3>";
+
+    $students = $pdo->query("SELECT * FROM hoc_sinh");
+
+    foreach ($students as $row) {
+        echo "ID: {$row['id']} - ";
+        echo "Tên: {$row['name']} - ";
+        echo "Tuổi: {$row['age']} - ";
+        echo "Điểm: {$row['grade']} <br>";
+    }
+
+    // Tìm học sinh điểm cao nhất
+    $top = $pdo->query(
+        "SELECT * FROM hoc_sinh ORDER BY grade DESC LIMIT 1"
+    )->fetch();
+
+    echo "<h3>Học sinh có điểm cao nhất</h3>";
+    echo "ID: {$top['id']} - ";
+    echo "Tên: {$top['name']} - ";
+    echo "Tuổi: {$top['age']} - ";
+    echo "Điểm: {$top['grade']}";
+
+} catch(PDOException $e) {
+    echo "Lỗi: " . $e->getMessage();
 }
-
-$topStudent = findTopStudent($students);
-
-echo "<h3>Học sinh có điểm cao nhất</h3>";
-echo "ID: " . $topStudent["id"] . "<br>";
-echo "Tên: " . $topStudent["name"] . "<br>";
-echo "Tuổi: " . $topStudent["age"] . "<br>";
-echo "Điểm: " . $topStudent["grade"];
 ?>
